@@ -1,0 +1,8 @@
+data/
+cache_dir/
+volumes/
+docker-compose.yml
+*.png
+*.keras
+src/main.py
+.env
