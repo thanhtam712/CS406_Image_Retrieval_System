@@ -70,10 +70,10 @@ if __name__ == '__main__':
     # ================== BẠN CHỈ CẦN CHỈNH 2 DÒNG DƯỚI ĐÂY ==================
     
     # 1. Đặt đường dẫn đến thư mục chứa 90 thư mục động vật của bạn
-    SOURCE_DIRECTORY = "c:/Projects/image_retrieval/CS406_Image_Retrieval_System/animals/animals" # Ví dụ: tên thư mục gốc là "animals"
+    SOURCE_DIRECTORY = "src/animals/animals" # Ví dụ: tên thư mục gốc là "animals"
     
     # 2. Đặt tên cho thư mục mới sẽ chứa kết quả sau khi chia
-    DESTINATION_DIRECTORY = "animal_dataset" # Thư mục này sẽ được tự động tạo
+    DESTINATION_DIRECTORY = "src/animal_dataset" # Thư mục này sẽ được tự động tạo
     
     # ======================================================================
     
