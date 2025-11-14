@@ -12,3 +12,4 @@ src/__pycache__/
 src/cache_dir/
 src/models/
 venv/
+uploads/
