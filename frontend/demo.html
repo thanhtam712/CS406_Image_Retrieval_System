@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo - Animal Detection System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .demo-section {
+            background: white;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #667eea; }
+        h2 { color: #764ba2; }
+        .screenshot {
+            width: 100%;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .feature {
+            padding: 15px;
+            background: #f8f9ff;
+            margin: 10px 0;
+            border-left: 4px solid #667eea;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        .step {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+        }
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🦁 Demo - Hệ thống Truy xuất Ảnh và Phân loại Động vật</h1>
+
+    <div class="demo-section">
+        <h2>📋 Tổng quan</h2>
+        <p>Đây là hệ thống web hoàn chỉnh để:</p>
+        <div class="feature">✅ Upload và phát hiện động vật trong ảnh</div>
+        <div class="feature">✅ Phân loại từng động vật với độ tin cậy cao</div>
+        <div class="feature">✅ Hiển thị thông tin chi tiết về loài động vật</div>
+        <div class="feature">✅ Tìm kiếm và hiển thị ảnh tương tự từ database</div>
+    </div>
+
+    <div class="demo-section">
+        <h2>🚀 Cách sử dụng</h2>
+        
+        <div class="step">
+            <div class="step-number">1</div>
+            <div>
+                <strong>Khởi động server</strong><br>
+                Chạy <code>./start_server.sh</code> hoặc <code>python src/app.py</code>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-number">2</div>
+            <div>
+                <strong>Mở trình duyệt</strong><br>
+                Truy cập <code>http://localhost:8000</code>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-number">3</div>
+            <div>
+                <strong>Upload ảnh</strong><br>
+                Kéo thả ảnh hoặc click để chọn file
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-number">4</div>
+            <div>
+                <strong>Xem kết quả</strong><br>
+                Hệ thống tự động phân tích và hiển thị kết quả
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>🎨 Giao diện</h2>
+        
+        <h3>Màn hình Upload</h3>
+        <div style="padding: 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; color: white; text-align: center;">
+            <h2>🦁 Hệ thống Truy xuất Ảnh và Phân loại Động vật</h2>
+            <div style="background: white; padding: 40px; margin: 20px; border-radius: 15px; color: #333;">
+                <div style="font-size: 4em;">📁</div>
+                <h3 style="color: #667eea;">Kéo thả ảnh vào đây hoặc click để chọn</h3>
+                <p>Hỗ trợ: JPG, PNG, JPEG</p>
+                <button style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 30px; border: none; border-radius: 25px; font-size: 1.1em; cursor: pointer;">
+                    Chọn ảnh
+                </button>
+            </div>
+        </div>
+
+        <h3 style="margin-top: 40px;">Màn hình Kết quả</h3>
+        <div style="padding: 20px; background: white; border: 2px solid #ddd; border-radius: 10px; margin-top: 20px;">
+            <h3 style="color: #667eea;">Kết quả phân tích</h3>
+            
+            <div style="background: #f8f9ff; padding: 20px; border-radius: 10px; margin: 15px 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #667eea; padding-bottom: 10px; margin-bottom: 15px;">
+                    <div style="font-size: 1.3em; color: #667eea; font-weight: bold;">🐾 Động vật 1: Lion</div>
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 6px 15px; border-radius: 15px; font-weight: 600;">
+                        Độ tin cậy: 95.2%
+                    </div>
+                </div>
+                
+                <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #667eea; margin: 15px 0;">
+                    <h4 style="color: #667eea;">📝 Thông tin chi tiết</h4>
+                    <p style="line-height: 1.6; color: #555;">
+                        Sư tử là loài động vật có vú thuộc họ mèo, được biết đến như "vua của các loài thú". 
+                        Chúng sống theo bầy đàn và có mái tóc dày đặc ở con đực...
+                    </p>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <h4 style="color: #333; margin-bottom: 15px;">🔍 Ảnh tương tự (Top 10)</h4>
+                    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px;">
+                        <div style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                            <div style="width: 100%; height: 100px; background: linear-gradient(135deg, #ddd 0%, #eee 100%);"></div>
+                            <div style="padding: 8px; text-align: center;">
+                                <span style="background: #4caf50; color: white; padding: 3px 8px; border-radius: 10px; font-size: 0.9em;">98.5%</span>
+                            </div>
+                        </div>
+                        <div style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                            <div style="width: 100%; height: 100px; background: linear-gradient(135deg, #ddd 0%, #eee 100%);"></div>
+                            <div style="padding: 8px; text-align: center;">
+                                <span style="background: #4caf50; color: white; padding: 3px 8px; border-radius: 10px; font-size: 0.9em;">96.3%</span>
+                            </div>
+                        </div>
+                        <div style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                            <div style="width: 100%; height: 100px; background: linear-gradient(135deg, #ddd 0%, #eee 100%);"></div>
+                            <div style="padding: 8px; text-align: center;">
+                                <span style="background: #4caf50; color: white; padding: 3px 8px; border-radius: 10px; font-size: 0.9em;">94.7%</span>
+                            </div>
+                        </div>
+                        <div style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                            <div style="width: 100%; height: 100px; background: linear-gradient(135deg, #ddd 0%, #eee 100%);"></div>
+                            <div style="padding: 8px; text-align: center;">
+                                <span style="background: #4caf50; color: white; padding: 3px 8px; border-radius: 10px; font-size: 0.9em;">92.1%</span>
+                            </div>
+                        </div>
+                        <div style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                            <div style="width: 100%; height: 100px; background: linear-gradient(135deg, #ddd 0%, #eee 100%);"></div>
+                            <div style="padding: 8px; text-align: center;">
+                                <span style="background: #4caf50; color: white; padding: 3px 8px; border-radius: 10px; font-size: 0.9em;">90.4%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>🛠️ Công nghệ</h2>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+            <div class="feature">
+                <strong>Backend</strong><br>
+                FastAPI, Python, PyTorch
+            </div>
+            <div class="feature">
+                <strong>Frontend</strong><br>
+                HTML5, CSS3, JavaScript (Vanilla)
+            </div>
+            <div class="feature">
+                <strong>AI Models</strong><br>
+                YOLO (Detection), CNN (Classification), CLIP (Retrieval)
+            </div>
+            <div class="feature">
+                <strong>Database</strong><br>
+                Milvus (Vector Database)
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>📚 Tài liệu</h2>
+        <ul>
+            <li><code>README_FRONTEND.md</code> - Hướng dẫn đầy đủ</li>
+            <li><code>QUICKSTART.md</code> - Hướng dẫn nhanh</li>
+            <li><code>start_server.sh</code> - Script khởi động tự động</li>
+        </ul>
+    </div>
+
+    <div class="demo-section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+        <h2>🎯 Sẵn sàng sử dụng!</h2>
+        <p style="font-size: 1.2em;">
+            Chạy <code style="background: rgba(255,255,255,0.2); color: white;">./start_server.sh</code> 
+            và mở <code style="background: rgba(255,255,255,0.2); color: white;">http://localhost:8000</code>
+        </p>
+    </div>
+</body>
+</html>

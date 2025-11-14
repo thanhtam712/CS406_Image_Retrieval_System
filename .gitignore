@@ -6,3 +6,9 @@ docker-compose.yml
 *.keras
 src/main.py
 .env
+synthetic_images/
+*.sh
+src/__pycache__/
+src/cache_dir/
+src/models/
+venv/

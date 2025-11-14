@@ -11,7 +11,7 @@ def parse_args():
     parser.add_argument('--image', type=str, required=True, help='Path to the input image')
     parser.add_argument('--model_path', type=str, default='models/best_animal_classifier.pth', help='Path to the trained model weights')
     parser.add_argument('--class_names_path', type=str, default='models/class_names.json', help='Path to the class names JSON file')
-    parser.add_argument('--summaries_path', type=str, default='src/animal_summaries.json', help='Path to the animal summaries JSON file')
+    parser.add_argument('--summaries_path', type=str, default='animal_summaries.json', help='Path to the animal summaries JSON file')
     parser.add_argument('--device', type=str, default='cuda', help='Device to run inference on (cuda or cpu)')
     return parser.parse_args()
 

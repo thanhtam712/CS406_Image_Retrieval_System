@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống Truy xuất Ảnh và Phân loại Động vật</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🦁 Hệ thống Truy xuất Ảnh và Phân loại Động vật</h1>
+            <p class="subtitle">Upload ảnh để phát hiện, phân loại và tìm kiếm ảnh tương tự</p>
+        </header>
+
+        <div class="upload-section">
+            <div class="upload-box" id="uploadBox">
+                <div class="upload-icon">📁</div>
+                <h3>Kéo thả ảnh vào đây hoặc click để chọn</h3>
+                <p>Hỗ trợ: JPG, PNG, JPEG</p>
+                <input type="file" id="fileInput" accept="image/*" hidden>
+                <button class="btn-primary" onclick="document.getElementById('fileInput').click()">
+                    Chọn ảnh
+                </button>
+            </div>
+            
+            <div class="preview-section" id="previewSection" style="display: none;">
+                <img id="previewImage" alt="Preview">
+                <button class="btn-secondary" onclick="resetUpload()">Chọn ảnh khác</button>
+                <button class="btn-primary" onclick="analyzeImage()">
+                    <span id="analyzeText">Phân tích</span>
+                    <span id="loadingSpinner" class="spinner" style="display: none;"></span>
+                </button>
+            </div>
+        </div>
+
+        <div class="results-section" id="resultsSection" style="display: none;">
+            <h2>Kết quả phân tích</h2>
+            <div id="resultsContainer"></div>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>

@@ -5,13 +5,8 @@ from pymilvus import MilvusClient, DataType
 
 load_dotenv()
 
-# print(os.getenv("URI_DATABASE"))
-# print(os.getenv("TOKEN_DATABASE"))
-
 client = MilvusClient(
-    # uri=os.getenv("URI_DATABASE"),
-    uri="http://192.168.20.150:19530",
-    # token=os.getenv("TOKEN_DATABASE")
+    uri="http://192.168.20.150:19532",
     token="root:Milvus"
 )
 

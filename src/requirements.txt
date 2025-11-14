@@ -1,3 +1,19 @@
+# AI/ML Libraries
+torch
+torchvision
 open_clip_torch
+ultralytics
+opencv-python
+pillow
+
+# Vector Database
 pymilvus
+
+# Web Framework
+fastapi
+uvicorn[standard]
+python-multipart
 pydantic
+
+# Utilities
+requests
