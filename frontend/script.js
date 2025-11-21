@@ -1,49 +1,89 @@
 const API_BASE = '';
-let selectedFile = null;
+let selectedFiles = {
+    1: null,
+    2: null
+};
 
-// DOM Elements
-const uploadBox = document.getElementById('uploadBox');
-const fileInput = document.getElementById('fileInput');
-const previewSection = document.getElementById('previewSection');
-const previewImage = document.getElementById('previewImage');
-const resultsSection = document.getElementById('resultsSection');
-const resultsContainer = document.getElementById('resultsContainer');
-const analyzeText = document.getElementById('analyzeText');
-const loadingSpinner = document.getElementById('loadingSpinner');
+// DOM Elements - will be initialized after DOM loads
+let uploadBox1, uploadBox2, fileInput1, fileInput2;
+let previewSection1, previewSection2, previewImage1, previewImage2;
+let resultsSection, resultsContainer1, resultsContainer2;
+let analyzeText, loadingSpinner, analyzeBtn;
 
-// File input change handler
-fileInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
-        handleFileSelect(file);
-    }
+// Initialize DOM elements and event listeners after page loads
+document.addEventListener('DOMContentLoaded', () => {
+    // Get DOM Elements
+    uploadBox1 = document.getElementById('uploadBox1');
+    uploadBox2 = document.getElementById('uploadBox2');
+    fileInput1 = document.getElementById('fileInput1');
+    fileInput2 = document.getElementById('fileInput2');
+    previewSection1 = document.getElementById('previewSection1');
+    previewSection2 = document.getElementById('previewSection2');
+    previewImage1 = document.getElementById('previewImage1');
+    previewImage2 = document.getElementById('previewImage2');
+    resultsSection = document.getElementById('resultsSection');
+    resultsContainer1 = document.getElementById('resultsContainer1');
+    resultsContainer2 = document.getElementById('resultsContainer2');
+    analyzeText = document.getElementById('analyzeText');
+    loadingSpinner = document.getElementById('loadingSpinner');
+    analyzeBtn = document.getElementById('analyzeBtn');
+
+    // File input change handlers
+    fileInput1.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            handleFileSelect(file, 1);
+        }
+    });
+
+    fileInput2.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            handleFileSelect(file, 2);
+        }
+    });
+
+    // Setup drag and drop for both upload boxes
+    setupDragAndDrop(uploadBox1, 1);
+    setupDragAndDrop(uploadBox2, 2);
+
+    // Check API health
+    checkAPIHealth();
 });
 
-// Drag and drop handlers
-uploadBox.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    uploadBox.classList.add('dragover');
-});
-
-uploadBox.addEventListener('dragleave', () => {
-    uploadBox.classList.remove('dragover');
-});
-
-uploadBox.addEventListener('drop', (e) => {
-    e.preventDefault();
-    uploadBox.classList.remove('dragover');
+// Setup drag and drop for both upload boxes
+function setupDragAndDrop(uploadBox, imageNumber) {
+    if (!uploadBox) return;
     
-    const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith('image/')) {
-        handleFileSelect(file);
-    } else {
-        alert('Vui lòng chọn file ảnh hợp lệ!');
-    }
-});
+    uploadBox.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadBox.classList.add('dragover');
+    });
+
+    uploadBox.addEventListener('dragleave', () => {
+        uploadBox.classList.remove('dragover');
+    });
+
+    uploadBox.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadBox.classList.remove('dragover');
+        
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) {
+            handleFileSelect(file, imageNumber);
+        } else {
+            alert('Vui lòng chọn file ảnh hợp lệ!');
+        }
+    });
+}
 
 // Handle file selection
-function handleFileSelect(file) {
-    selectedFile = file;
+function handleFileSelect(file, imageNumber) {
+    selectedFiles[imageNumber] = file;
+    
+    const uploadBox = document.getElementById(`uploadBox${imageNumber}`);
+    const previewSection = document.getElementById(`previewSection${imageNumber}`);
+    const previewImage = document.getElementById(`previewImage${imageNumber}`);
     
     // Show preview
     const reader = new FileReader();
@@ -56,64 +96,70 @@ function handleFileSelect(file) {
     reader.readAsDataURL(file);
 }
 
-// Reset upload
-function resetUpload() {
-    selectedFile = null;
+// Reset upload for specific image
+function resetUpload(imageNumber) {
+    selectedFiles[imageNumber] = null;
+    
+    const fileInput = document.getElementById(`fileInput${imageNumber}`);
+    const uploadBox = document.getElementById(`uploadBox${imageNumber}`);
+    const previewSection = document.getElementById(`previewSection${imageNumber}`);
+    const resultsContainer = document.getElementById(`resultsContainer${imageNumber}`);
+    
     fileInput.value = '';
     uploadBox.style.display = 'block';
     previewSection.style.display = 'none';
+    
+    if (resultsContainer) {
+        resultsContainer.innerHTML = '';
+    }
+}
+
+// Reset all uploads
+function resetAll() {
+    resetUpload(1);
+    resetUpload(2);
     resultsSection.style.display = 'none';
 }
 
-// Analyze image
-async function analyzeImage() {
-    if (!selectedFile) {
-        alert('Vui lòng chọn ảnh trước!');
+// Analyze images
+async function analyzeImages() {
+    if (!selectedFiles[1]) {
+        alert('Vui lòng chọn ít nhất ảnh thứ nhất!');
         return;
     }
     
     // Show loading state
-    const analyzeBtn = event.target;
     analyzeBtn.disabled = true;
     analyzeText.textContent = 'Đang phân tích...';
     loadingSpinner.style.display = 'inline-block';
     
-    const formData = new FormData();
-    formData.append('file', selectedFile);
-    
     try {
-        const response = await fetch(`${API_BASE}/api/analyze`, {
-            method: 'POST',
-            body: formData
-        });
+        // Clear previous results
+        resultsContainer1.innerHTML = '';
+        resultsContainer2.innerHTML = '';
+        resultsSection.style.display = 'block';
         
-        console.log('Response status:', response.status);
-        console.log('Response headers:', response.headers);
-        
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('Error response:', errorText);
-            throw new Error(`HTTP error! status: ${response.status}`);
+        // Analyze image 1
+        if (selectedFiles[1]) {
+            resultsContainer1.innerHTML = '<div class="loading-message">⏳ Đang xử lý ảnh 1...</div>';
+            const data1 = await analyzeSingleImage(selectedFiles[1]);
+            displayResults(data1, 1);
         }
         
-        const responseText = await response.text();
-        console.log('Response size:', responseText.length, 'chars');
-        
-        let data;
-        try {
-            data = JSON.parse(responseText);
-            console.log('Parsed data:', data);
-        } catch (parseError) {
-            console.error('JSON parse error:', parseError);
-            console.error('Response text preview:', responseText.substring(0, 500));
-            throw new Error('Failed to parse server response');
+        // Analyze image 2 if provided
+        if (selectedFiles[2]) {
+            resultsContainer2.innerHTML = '<div class="loading-message">⏳ Đang xử lý ảnh 2...</div>';
+            const data2 = await analyzeSingleImage(selectedFiles[2]);
+            displayResults(data2, 2);
+        } else {
+            resultsContainer2.innerHTML = '<div class="no-image-message">💡 Không có ảnh thứ hai để phân tích</div>';
         }
         
-        displayResults(data);
+        // Smooth scroll to results
+        resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } catch (error) {
         console.error('Error:', error);
-        console.error('Error stack:', error.stack);
-        displayError('Đã xảy ra lỗi khi phân tích ảnh. Vui lòng thử lại!');
+        displayError('Đã xảy ra lỗi khi phân tích ảnh. Vui lòng thử lại!', 1);
     } finally {
         // Reset button state
         analyzeBtn.disabled = false;
@@ -122,28 +168,65 @@ async function analyzeImage() {
     }
 }
 
+// Analyze single image
+async function analyzeSingleImage(file) {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const response = await fetch(`${API_BASE}/api/analyze`, {
+        method: 'POST',
+        body: formData
+    });
+    
+    console.log('Response status:', response.status);
+    
+    if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const responseText = await response.text();
+    console.log('Response size:', responseText.length, 'chars');
+    
+    let data;
+    try {
+        data = JSON.parse(responseText);
+        console.log('Parsed data:', data);
+    } catch (parseError) {
+        console.error('JSON parse error:', parseError);
+        console.error('Response text preview:', responseText.substring(0, 500));
+        throw new Error('Failed to parse server response');
+    }
+    
+    return data;
+}
+
 // Display results
-function displayResults(data) {
-    resultsSection.style.display = 'block';
+function displayResults(data, imageNumber) {
+    const resultsContainer = document.getElementById(`resultsContainer${imageNumber}`);
     resultsContainer.innerHTML = '';
     
     if (!data.success) {
         resultsContainer.innerHTML = `
             <div class="no-animals-message">
                 <h3>⚠️ ${data.message}</h3>
-                <p>Không phát hiện động vật nào trong ảnh. Vui lòng thử ảnh khác!</p>
+                <p>Không phát hiện động vật nào trong ảnh.</p>
             </div>
         `;
         return;
     }
     
+    // Add image header
+    const header = document.createElement('div');
+    header.className = 'result-header';
+    header.innerHTML = `<h3>📸 Kết quả ảnh ${imageNumber}</h3>`;
+    resultsContainer.appendChild(header);
+    
     data.objects.forEach((obj, index) => {
         const objectCard = createObjectCard(obj, index);
         resultsContainer.appendChild(objectCard);
     });
-    
-    // Smooth scroll to results
-    resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 // Create object card
@@ -156,12 +239,11 @@ function createObjectCard(obj, index) {
     card.innerHTML = `
         <div class="object-header">
             <div class="object-title">🐾 Động vật ${index + 1}: ${obj.predicted_class}</div>
-            <div class="confidence-badge">Độ tin cậy: ${confidencePercent}%</div>
         </div>
         
         ${obj.cropped_image ? `
             <div class="cropped-image-section">
-                <h3>Ảnh đối tượng đã cắt</h3>
+                <h3>Ảnh đối tượng</h3>
                 <img src="data:image/jpeg;base64,${obj.cropped_image}" alt="Cropped animal" class="cropped-image">
             </div>
         ` : ''}
@@ -205,8 +287,9 @@ function createSimilarImageCard(img) {
 }
 
 // Display error
-function displayError(message) {
+function displayError(message, imageNumber) {
     resultsSection.style.display = 'block';
+    const resultsContainer = document.getElementById(`resultsContainer${imageNumber || 1}`);
     resultsContainer.innerHTML = `
         <div class="error-message">
             <h3>❌ Lỗi</h3>
@@ -216,8 +299,8 @@ function displayError(message) {
     resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-// Check API health on load
-window.addEventListener('load', async () => {
+// Check API health
+async function checkAPIHealth() {
     try {
         const response = await fetch(`${API_BASE}/api/health`);
         const data = await response.json();
@@ -225,4 +308,4 @@ window.addEventListener('load', async () => {
     } catch (error) {
         console.error('API not available:', error);
     }
-});
+}

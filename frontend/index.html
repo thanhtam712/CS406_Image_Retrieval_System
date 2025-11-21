@@ -3,40 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ thống Truy xuất Ảnh và Phân loại Động vật</title>
+    <title>Hệ thống Truy xuất ảnh và thông tin Động vật</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🦁 Hệ thống Truy xuất Ảnh và Phân loại Động vật</h1>
-            <p class="subtitle">Upload ảnh để phát hiện, phân loại và tìm kiếm ảnh tương tự</p>
+            <h1>🦁 Hệ thống Truy xuất ảnh và thông tin Động vật</h1>
+            <p class="subtitle">Upload 1 hoặc 2 ảnh để phát hiện, phân loại và so sánh kết quả</p>
         </header>
 
         <div class="upload-section">
-            <div class="upload-box" id="uploadBox">
-                <div class="upload-icon">📁</div>
-                <h3>Kéo thả ảnh vào đây hoặc click để chọn</h3>
-                <p>Hỗ trợ: JPG, PNG, JPEG</p>
-                <input type="file" id="fileInput" accept="image/*" hidden>
-                <button class="btn-primary" onclick="document.getElementById('fileInput').click()">
-                    Chọn ảnh
-                </button>
+            <div class="dual-upload-container">
+                <!-- Image 1 Upload -->
+                <div class="upload-column">
+                    <h3 class="column-title">Ảnh thứ nhất</h3>
+                    <div class="upload-box" id="uploadBox1">
+                        <div class="upload-icon">📁</div>
+                        <h4>Kéo thả ảnh vào đây</h4>
+                        <p>Hỗ trợ: JPG, PNG, JPEG</p>
+                        <input type="file" id="fileInput1" accept="image/*" hidden>
+                        <button class="btn-primary" onclick="document.getElementById('fileInput1').click()">
+                            Chọn ảnh 1
+                        </button>
+                    </div>
+                    
+                    <div class="preview-section" id="previewSection1" style="display: none;">
+                        <img id="previewImage1" alt="Preview 1">
+                        <button class="btn-secondary btn-small" onclick="resetUpload(1)">Chọn lại</button>
+                    </div>
+                </div>
+
+                <!-- Image 2 Upload -->
+                <div class="upload-column">
+                    <h3 class="column-title">Ảnh thứ hai (Tùy chọn)</h3>
+                    <div class="upload-box" id="uploadBox2">
+                        <div class="upload-icon">📁</div>
+                        <h4>Kéo thả ảnh vào đây</h4>
+                        <p>Hỗ trợ: JPG, PNG, JPEG</p>
+                        <input type="file" id="fileInput2" accept="image/*" hidden>
+                        <button class="btn-primary" onclick="document.getElementById('fileInput2').click()">
+                            Chọn ảnh 2
+                        </button>
+                    </div>
+                    
+                    <div class="preview-section" id="previewSection2" style="display: none;">
+                        <img id="previewImage2" alt="Preview 2">
+                        <button class="btn-secondary btn-small" onclick="resetUpload(2)">Chọn lại</button>
+                    </div>
+                </div>
             </div>
-            
-            <div class="preview-section" id="previewSection" style="display: none;">
-                <img id="previewImage" alt="Preview">
-                <button class="btn-secondary" onclick="resetUpload()">Chọn ảnh khác</button>
-                <button class="btn-primary" onclick="analyzeImage()">
+
+            <div class="analyze-button-container">
+                <button class="btn-primary btn-large" onclick="analyzeImages()" id="analyzeBtn">
                     <span id="analyzeText">Phân tích</span>
                     <span id="loadingSpinner" class="spinner" style="display: none;"></span>
                 </button>
+                <button class="btn-secondary btn-large" onclick="resetAll()" style="margin-left: 15px;">Làm mới</button>
             </div>
         </div>
 
         <div class="results-section" id="resultsSection" style="display: none;">
             <h2>Kết quả phân tích</h2>
-            <div id="resultsContainer"></div>
+            <div class="dual-results-container">
+                <div class="result-column" id="resultsContainer1"></div>
+                <div class="result-column" id="resultsContainer2"></div>
+            </div>
         </div>
     </div>
 
