@@ -8,14 +8,16 @@ import argparse
 import os
 import json
 
-from classifier import get_animal_classifier
+from classifier import get_model
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Train an animal classifier")
     parser.add_argument('--data_dir', type=str, required=True, help='Path to the dataset directory (containing train and val)')
-    parser.add_argument('--epochs', type=int, default=25, help='Number of training epochs')
+    parser.add_argument('--model_name', type=str, default='resnet50', help='resnet50, mobilenet, vgg16')
+    parser.add_argument('--epochs', type=int, default=50, help='Number of training epochs')
     parser.add_argument('--batch_size', type=int, default=32, help='Batch size for training')
     parser.add_argument('--lr', type=float, default=0.001, help='Learning rate')
+    parser.add_argument('--patience', type=int, default=10, help='Early stopping patience')
     parser.add_argument('--output_dir', type=str, default='models', help='Directory to save the trained model')
     parser.add_argument('--device', type=str, default='cuda', help='Device to run training on (cuda or cpu)')
     return parser.parse_args()
@@ -23,6 +25,9 @@ def parse_args():
 def main():
     args = parse_args()
     
+    print(f"🚀 Start training model: {args.model_name.upper()}")
+    print(f"⏳ Early Stopping configuration: Patience = {args.patience} epochs")
+
     # Chuẩn bị Data
     data_transforms = {
         'train': transforms.Compose([
@@ -40,15 +45,15 @@ def main():
     }
 
     image_datasets = {x: datasets.ImageFolder(os.path.join(args.data_dir, x), data_transforms[x]) for x in ['train', 'val']}
-    dataloaders = {x: DataLoader(image_datasets[x], batch_size=args.batch_size, shuffle=True, num_workers=4) for x in ['train', 'val']}
+    dataloaders = {x: DataLoader(image_datasets[x], batch_size=args.batch_size, shuffle=True, num_workers=2) for x in ['train', 'val']}
     
     class_names = image_datasets['train'].classes
     num_classes = len(class_names)
     print(f"Found {num_classes} classes: {', '.join(class_names)}")
 
-    # Khởi tạo Mô hình, Loss, Optimizer
+    # Khởi tạo Mô hình
     device = torch.device(args.device if torch.cuda.is_available() else "cpu")
-    model = get_animal_classifier(num_classes).to(device)
+    model = get_model(args.model_name, num_classes, device, pretrained=True)
     
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.fc.parameters(), lr=args.lr) 
@@ -56,6 +61,8 @@ def main():
     # Vòng lặp Training
     best_acc = 0.0
     os.makedirs(args.output_dir, exist_ok=True)
+
+    epochs_no_improve = 0
     
     for epoch in range(args.epochs):
         print(f'Epoch {epoch+1}/{args.epochs}')
@@ -92,12 +99,24 @@ def main():
             epoch_acc = running_corrects.double() / len(image_datasets[phase])
             print(f'{phase} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f}')
 
-            # Lưu lại model tốt nhất
-            if phase == 'val' and epoch_acc > best_acc:
-                best_acc = epoch_acc
-                model_path = os.path.join(args.output_dir, 'best_animal_classifier.pth')
-                torch.save(model.state_dict(), model_path)
-                print(f"New best model saved to {model_path} with accuracy: {best_acc:.4f}")
+            # Early Stopping
+            if phase == 'val':
+                if epoch_acc > best_acc:
+                    best_acc = epoch_acc
+                    epochs_no_improve = 0 
+                    
+                    save_name = f"best_{args.model_name}.pth"
+                    model_path = os.path.join(args.output_dir, save_name)
+                    torch.save(model.state_dict(), model_path)
+                    print(f"🌟 New best model saved to {model_path} with accuracy: {best_acc:.4f}")
+                else:
+                    epochs_no_improve += 1
+                    print(f"⚠️ Validation Accuracy did not improve. Patience: {epochs_no_improve}/{args.patience}")
+        
+        if epochs_no_improve >= args.patience:
+            print(f"\n🛑 EARLY STOPPING! Model has not improved for {args.patience} epochs.")
+            print(f"Best Accuracy: {best_acc:.4f}")
+            break
 
     # Lưu lại tên các lớp để dùng khi predict
     class_names_path = os.path.join(args.output_dir, 'class_names.json')

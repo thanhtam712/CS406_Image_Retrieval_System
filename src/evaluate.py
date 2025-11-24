@@ -5,14 +5,14 @@ from torchvision import datasets, transforms
 from tqdm import tqdm
 import argparse
 import os
-import json
 
-# Import hàm tạo model từ file classifier.py
-from classifier import get_animal_classifier
+# Import hàm load model từ classifier.py
+from classifier import load_trained_classifier
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Evaluate the animal classifier on Test set")
     parser.add_argument('--data_dir', type=str, required=True, help='Path to the dataset directory (containing test folder)')
+    parser.add_argument('--model_name', type=str, default='resnet50', help='resnet50, mobilenet, vgg16')
     parser.add_argument('--model_path', type=str, default='models/best_animal_classifier.pth', help='Path to the trained model weights')
     parser.add_argument('--batch_size', type=int, default=32, help='Batch size for evaluation')
     parser.add_argument('--device', type=str, default='cuda', help='Device to run evaluation on')
@@ -46,15 +46,13 @@ def main():
     print(f"Evaluating on {len(test_dataset)} images of {num_classes} classes.")
 
     # 2. Tải mô hình
-    print(f"Loading model from {args.model_path}...")
-    model = get_animal_classifier(num_classes) # Tạo khung model
-    
-    # Nạp weights đã train vào (xử lý trường hợp load từ CPU/GPU)
-    state_dict = torch.load(args.model_path, map_location=device)
-    model.load_state_dict(state_dict)
-    
-    model.to(device)
-    model.eval() # QUAN TRỌNG: Chuyển sang chế độ đánh giá (tắt Dropout, v.v.)
+    print(f"Loading model {args.model_name} from {args.model_path}...")
+    try:
+        model = load_trained_classifier(args.model_path, args.model_name, num_classes, device)
+    except Exception as e:
+        print(f"❌ Lỗi khi tải model: {e}")
+        print("💡 Gợi ý: Kiểm tra xem --model_name có khớp với file weights không?")
+        return
 
     # 3. Vòng lặp đánh giá
     running_corrects = 0
@@ -77,17 +75,24 @@ def main():
             
             # Tính đúng cho từng lớp
             c = (preds == labels).squeeze()
-            for i in range(inputs.size(0)): # Duyệt qua từng ảnh trong batch
-                label = labels[i]
-                class_correct[label] += c[i].item()
-                class_total[label] += 1
 
-    # 4. In kết quả chung cuộc
+            # Xử lý trường hợp batch cuối cùng có thể có kích thước nhỏ hơn
+            if inputs.size(0) == 1: # Nếu batch chỉ có 1 ảnh
+                 label = labels.item()
+                 class_correct[label] += c.item()
+                 class_total[label] += 1
+            else:
+                for i in range(inputs.size(0)):
+                    label = labels[i].item()
+                    class_correct[label] += c[i].item()
+                    class_total[label] += 1
+
+    # 4. In kết quả tổng thể
     total_acc = running_corrects.double() / len(test_dataset)
-    print('-' * 30)
+    print('-' * 40)
     print(f'🔥 TỔNG KẾT QUẢ TRÊN TẬP TEST:')
     print(f'👉 Overall Accuracy: {total_acc:.2%}')
-    print('-' * 30)
+    print('-' * 40)
 
     # 5. In kết quả chi tiết từng lớp (Optional)
     print("\nChi tiết từng lớp:")

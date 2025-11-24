@@ -9,7 +9,8 @@ from classifier import load_trained_classifier
 def parse_args():
     parser = argparse.ArgumentParser(description="Classify an animal image")
     parser.add_argument('--image', type=str, required=True, help='Path to the input image')
-    parser.add_argument('--model_path', type=str, default='models/best_animal_classifier.pth', help='Path to the trained model weights')
+    parser.add_argument('--model_name', type=str, default='resnet50', help='resnet50, mobilenet, vgg16')
+    parser.add_argument('--model_path', type=str, default='models/best_resnet50.pth', help='Path to the trained model weights')
     parser.add_argument('--class_names_path', type=str, default='models/class_names.json', help='Path to the class names JSON file')
     parser.add_argument('--summaries_path', type=str, default='animal_summaries.json', help='Path to the animal summaries JSON file')
     parser.add_argument('--device', type=str, default='cuda', help='Device to run inference on (cuda or cpu)')
@@ -53,8 +54,14 @@ def main():
         
     num_classes = len(class_names)
     
+    print(f"Đang tải model {args.model_name} từ {args.model_path}...")
+    
     # Tải mô hình đã huấn luyện
-    model = load_trained_classifier(args.model_path, num_classes, device)
+    try:
+        model = load_trained_classifier(args.model_path, args.model_name, num_classes, device)
+    except Exception as e:
+        print(f"Lỗi khi tải model: {e}")
+        return
     
     # Dự đoán
     predicted_class, confidence = predict_image(args.image, model, class_names, device)
