@@ -1,3 +1,8 @@
+# Đề tài gồm có các thành viên:
+1. Huỳnh Thúy Diễm - 23520284
+2. Lê Thị Thanh Tâm - 23521386
+3. Văn Thị Tường Vy - 23521839
+
 # Hướng dẫn sử dụng hệ thống Image and Summarize Document Retrieval Application for Animals (CS406)
 
 ## 1. Cài đặt môi trường
