@@ -1,4 +1,4 @@
-# Đề tài gồm có các thành viên:
+# Nhóm gồm có các thành viên:
 1. Huỳnh Thúy Diễm - 23520284
 2. Lê Thị Thanh Tâm - 23521386
 3. Văn Thị Tường Vy - 23521839
