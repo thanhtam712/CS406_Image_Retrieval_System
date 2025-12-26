@@ -13,6 +13,7 @@ pip install -r requirements.txt
 ## 2. Chuẩn bị dữ liệu
 
 - Dữ liệu ảnh động vật nằm trong thư mục `data/animals/` (mỗi loài 1 thư mục con).
+  - Dataset gốc có thể tải tại: https://www.kaggle.com/datasets/iamsouravbanerjee/animal-image-dataset-90-different-animals
 - Dữ liệu phân đoạn cảnh vật: `data/seg/` và `data/seg_test/`.
 
 ## 3. Tiền xử lý & Tạo chỉ mục dữ liệu
